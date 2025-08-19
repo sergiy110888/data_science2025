@@ -1,0 +1,225 @@
+import psycopg2
+import pandas as pd
+
+DBNAME = 'project_sql'
+USER = 'skillfactory'
+PASSWORD = 'cCkxxLVrDE8EbvjueeMedPKt'
+HOST = '84.201.134.129'
+PORT = 5432
+try:
+    # Устанавливаем соединение
+    connection = psycopg2.connect(
+                    dbname=DBNAME,
+                    user=USER,
+                    host=HOST,
+                    password=PASSWORD,
+                    port=PORT)
+    
+    print("Подключение установлено!")
+    
+except Exception as error:
+    print(f"Ошибка подключения: {error}")
+
+
+##
+##query = '''select count(vacancies.id) u ,
+##                count (vacancies.employer_id )
+##
+##           from vacancies
+##           join employers
+##           on employers.id=vacancies.employer_id
+##           join areas
+##           on areas.id=vacancies.area_id
+##
+##           group by vacancies.area_id
+##           order by u 
+##           limit(25)           
+##        '''
+query = '''select *
+
+           from vacancies
+           join employers
+           on employers.id=vacancies.employer_id
+           join areas
+           on areas.id=vacancies.area_id
+           
+            where vacancies.id=2
+           
+           limit(25)           
+        '''
+
+
+##зад 5,5   
+##query = '''select employers.name,COUNT(employers.name)
+##
+##           from employers_industries
+##           join industries
+##           on employers_industries.industry_id=industries.id
+##           join employers
+##           on employers_industries.employer_id=employers.id
+##           
+##         GROUP BY employers.name
+##         HAVING COUNT(employers.name)=4
+##         ORDER BY employers.name
+##           limit 15
+##           '''
+
+##зад 5,6   
+##query = '''select industries.name,count(industries.name)
+##
+##           from employers_industries
+##           join industries
+##           on employers_industries.industry_id=industries.id
+##           join employers
+##           on employers_industries.employer_id=employers.id
+##
+##           group by industries.name
+##           having  industries.name='Разработка программного обеспечения'
+## 
+##           limit 15areas.name, 
+##           '''
+
+##зад 5.7
+##query = '''select count(vacancies.id) cnt
+##            from vacancies
+##            join areas
+##            on vacancies.area_id=areas.id
+##            join employers
+##            on vacancies.employer_id=employers.id
+##
+##            where areas.name in ('Москва', 'Санкт-Петербург', 'Новосибирск', 'Екатеринбург', 'Казань', 'Красноярск', 'Нижний Новгород', 'Челябинск', 'Уфа', 'Самара', 'Ростов-на-Дону', 'Краснодар', 'Омск', 'Воронеж', 'Пермь', 'Волгоград')           
+##            and employers.name='Яндекс'
+##
+##            group by areas.name
+##            order by cnt desc           
+##           '''
+##where vacancies.name like '%data%' or
+##            vacancies.name like '%данн%'
+    
+##зад 6.1    
+##query = '''select count(*)
+##            from vacancies
+##            join areas
+##            on vacancies.area_id=areas.id
+##            join employers
+##            on vacancies.employer_id=employers.id
+##            where vacancies.name ilike '%data%' or 
+##                  vacancies.name ilike '%данн%'
+##          
+##           '''
+
+##зад 6.2
+##query = '''select vacancies.name
+##            from public.vacancies
+##            join public.areas
+##            on vacancies.area_id=areas.id
+##            join public.employers
+##            on vacancies.employer_id=employers.id
+##            
+##            where (vacancies.name ilike '%junior%' or
+##                vacancies.employment ilike '%Стажировка%' or
+##                vacancies.experience ilike '%Нет опыта%') and((
+##            vacancies.name ilike '%ML%' and vacancies.name not ilike '%HTML%') or
+##            vacancies.name ilike '%data scientist%' or
+##            vacancies.name ilike '%data science%' or
+##            vacancies.name ilike '%исследователь данных%'or
+##            vacancies.name ilike '%machine learning%'or
+##            vacancies.name ilike '%машинн%обучен%')            
+##           '''
+
+##зад 6.3
+##query = '''select count(*)--vacancies.key_skills--,vacancies.name--,vacancies.experience
+##            from public.vacancies
+##            join public.areas
+##            on vacancies.area_id=areas.id
+##            join public.employers
+##            on vacancies.employer_id=employers.id
+##            
+##            where (vacancies.key_skills ilike '%SQL%' or
+##                vacancies.key_skills ilike '%postgres%') and(
+##            (vacancies.name ilike '%ML%' and vacancies.name not ilike '%HTML%') or
+##            vacancies.name ilike '%data scientist%' or
+##            vacancies.name ilike '%data science%' or
+##            vacancies.name ilike '%исследователь данных%'or
+##            vacancies.name ilike '%machine learning%'or
+##            vacancies.name ilike '%машинн%обучен%')
+##            limit 20
+##           '''
+
+##зад 6.4   
+##query = '''select count(*)--vacancies.key_skills--,vacancies.name--,vacancies.experience
+##            from public.vacancies
+##            join public.areas
+##            on vacancies.area_id=areas.id
+##            join public.employers
+##            on vacancies.employer_id=employers.id
+##            
+##            where vacancies.key_skills ilike '%python%'
+##                 and(
+##            (vacancies.name ilike '%ML%' and vacancies.name not ilike '%HTML%') or
+##            vacancies.name ilike '%data scientist%' or
+##            vacancies.name ilike '%data science%' or
+##            vacancies.name ilike '%исследователь данных%'or
+##            vacancies.name ilike '%machine learning%'or
+##            vacancies.name ilike '%машинн%обучен%')
+##           -- limit 20
+##           '''AVG( COALESCE((LENGTH(vacancies.key_skills) - LENGTH(REPLACE(vacancies.key_skills, CHR(9),'') )+1),0))AS count_result
+
+##зад 6.5
+##query = ''' SELECT 
+##            avg(LENGTH(vacancies.key_skills) - LENGTH(REPLACE(vacancies.key_skills, CHR(9),''))+1) AS count_result
+##            
+##            from public.vacancies
+##            join public.areas
+##            on vacancies.area_id=areas.id
+##            join public.employers
+##            on vacancies.employer_id=employers.id
+##            
+##            where
+##            vacancies.key_skills is not null and(
+##            (vacancies.name like '%ML%' and vacancies.name not ilike '%HTML%') or
+##            vacancies.name ilike '%data scientist%' or
+##            vacancies.name ilike '%data science%' or
+##            vacancies.name ilike '%исследователь данных%'or
+##            vacancies.name ilike '%machine learning%'or
+##            vacancies.name ilike '%машинн%обучен%')    
+##           '''
+
+##зад 6.6
+##query = '''SELECT 
+##    AVG(
+##        CASE 
+##            WHEN vacancies.salary_from IS NULL THEN vacancies.salary_to
+##            WHEN vacancies.salary_to IS NULL THEN vacancies.salary_from
+##            ELSE (vacancies.salary_from + vacancies.salary_to) / 2
+##        END
+##    ) AS average_salary,
+##    vacancies.experience
+##            
+##            from public.vacancies
+##            join public.areas
+##            on vacancies.area_id=areas.id
+##            join public.employers
+##            on vacancies.employer_id=employers.id
+##            
+##            where
+##            (vacancies.salary_from is not null or
+##            vacancies.salary_to is not null) and(
+##            (vacancies.name like '%ML%' and vacancies.name not ilike '%HTML%') or
+##            vacancies.name ilike '%data scientist%' or
+##            vacancies.name ilike '%data science%' or
+##            vacancies.name ilike '%исследователь данных%'or
+##            vacancies.name ilike '%machine learning%'or
+##            vacancies.name ilike '%машинн%обучен%')
+##
+##            group by vacancies.experience        
+##           '''
+
+
+pd.set_option('display.max_rows', None)  # Все строки
+pd.set_option('display.max_columns', None)  # Все колонки
+with pd.option_context('display.max_colwidth', None):
+    df = pd.read_sql_query(query, connection)
+print(df)
+connection.close()
+print("\nПодключение закрыто!")
